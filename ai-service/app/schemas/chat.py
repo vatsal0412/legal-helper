@@ -1,4 +1,11 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
+
+class ChatHistoryMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1)
 
 
 class ChatRequest(BaseModel):
@@ -6,6 +13,8 @@ class ChatRequest(BaseModel):
     sessionId: str
     userId: str
     useRag: bool = True
+    fileId: str | None = None
+    history: list[ChatHistoryMessage] = []
 
 
 class PdfChatRequest(BaseModel):

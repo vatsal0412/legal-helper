@@ -25,39 +25,61 @@ export function ProfilePage() {
 	};
 
 	return (
-		<main className="max-w-3xl mx-auto p-4">
-			<form onSubmit={save} className="glass rounded-2xl p-6 space-y-4">
-				<h1 className="font-display text-3xl">Profile</h1>
-				<p className="text-sm text-slate-600">Email: {user?.email}</p>
-				<input
-					className="w-full rounded-lg border p-3"
-					value={name}
-					onChange={e => setName(e.target.value)}
-					placeholder="Name"
-				/>
-				<input
-					className="w-full rounded-lg border p-3"
-					value={avatar}
-					onChange={e => setAvatar(e.target.value)}
-					placeholder="Avatar URL"
-				/>
-				<div className="flex gap-2">
-					<button className="rounded-lg bg-dusk text-white px-4 py-2">
-						Save
+		<main className="max-w-3xl mx-auto p-4 bg-surface min-h-screen">
+			<form onSubmit={save} className="card rounded-lg p-6 space-y-5">
+				<div>
+					<h1 className="text-display text-foreground font-bold mb-1">
+						👤 Profile
+					</h1>
+					<p className="text-caption text-foreground-muted">
+						Email:{' '}
+						<span className="text-accent font-mono">
+							{user?.email}
+						</span>
+					</p>
+				</div>
+				<div className="space-y-4">
+					<div>
+						<label className="block text-body font-semibold text-foreground mb-2">
+							Full Name
+						</label>
+						<input
+							className="input-field"
+							value={name}
+							onChange={e => setName(e.target.value)}
+							placeholder="Your name"
+							required
+						/>
+					</div>
+					<div>
+						<label className="block text-body font-semibold text-foreground mb-2">
+							Avatar URL
+						</label>
+						<input
+							className="input-field"
+							value={avatar}
+							onChange={e => setAvatar(e.target.value)}
+							placeholder="Profile image URL"
+						/>
+					</div>
+				</div>
+				<div className="flex gap-2 pt-4 border-t border-surface-tertiary">
+					<button className="btn-primary font-bold px-5 py-2.5">
+						✓ Save Changes
 					</button>
 					<button
 						type="button"
-						className="rounded-lg border px-4 py-2"
+						className="btn-secondary font-bold px-5 py-2.5"
 						onClick={() => dispatch(logout())}
 					>
 						Logout
 					</button>
 					<button
 						type="button"
-						className="rounded-lg border border-red-400 text-red-600 px-4 py-2"
+						className="inline-flex items-center justify-center px-4 py-2.5 bg-error/80 hover:bg-error text-foreground font-bold text-sm rounded-lg shadow-md transition-all duration-200 ml-auto"
 						onClick={remove}
 					>
-						Delete Account
+						🗑 Delete Account
 					</button>
 				</div>
 			</form>

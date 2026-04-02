@@ -2,34 +2,36 @@ import { Link } from 'react-router-dom';
 
 export function LandingPage() {
 	return (
-		<main className="min-h-screen grid place-items-center px-4">
-			<section className="glass max-w-4xl w-full rounded-3xl p-10 fade-up">
-				<p className="text-sm font-semibold uppercase tracking-widest text-blaze">
+		<main className="min-h-screen grid place-items-center px-4 bg-surface">
+			<section className="card max-w-4xl w-full rounded-lg p-12 fade-up">
+				<p className="text-xs font-bold uppercase tracking-legal text-accent">
 					AI + Legal Workflow
 				</p>
-				<h1 className="font-display text-5xl mt-3 leading-tight">
-					Legal Helper for research, drafting, and document-grounded
-					chat
+				<h1 className="text-display-lg text-foreground mt-4 leading-tight font-bold">
+					Your Digital Legal Manuscript
 				</h1>
-				<p className="mt-5 text-slate-700 max-w-2xl">
-					Production-grade legal assistant with secure auth,
-					citation-backed RAG, and end-to-end document ingestion
-					tracking.
+				<p className="mt-6 text-foreground-secondary max-w-2xl leading-relaxed text-body-lg">
+					Production-grade legal assistant with secure authentication,
+					citation-backed document retrieval, and end-to-end ingestion
+					tracking. Designed for serious legal research and analysis.
 				</p>
-				<div className="mt-8 flex gap-3">
+				<div className="mt-8 flex gap-3 flex-wrap">
 					<Link
 						to="/signup"
-						className="rounded-xl bg-dusk text-white px-6 py-3"
+						className="btn-primary px-6 py-3 font-bold tracking-legal"
 					>
 						Create account
 					</Link>
 					<Link
 						to="/login"
-						className="rounded-xl border border-slate-400 px-6 py-3"
+						className="btn-secondary px-6 py-3 font-bold tracking-legal"
 					>
 						Sign in
 					</Link>
 				</div>
+				<p className="text-caption text-foreground-muted mt-8 pt-6 border-t border-surface-tertiary">
+					✓ Secure • ✓ Private • ✓ Research-Grade
+				</p>
 			</section>
 		</main>
 	);

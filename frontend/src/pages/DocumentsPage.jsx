@@ -22,50 +22,63 @@ export function DocumentsPage() {
 	};
 
 	return (
-		<main className="max-w-6xl mx-auto p-4 space-y-4">
+		<main className="max-w-6xl mx-auto p-4 space-y-4 bg-surface min-h-screen">
 			<FileUploader
 				onUpload={handleUpload}
 				loading={uploadState === 'uploading'}
 			/>
-			<section className="glass rounded-2xl p-4">
-				<div className="flex items-center justify-between mb-3">
-					<h2 className="font-display text-2xl">Document Status</h2>
+			<section className="card rounded-lg p-5">
+				<div className="flex items-center justify-between mb-4">
+					<h2 className="text-heading-lg text-foreground font-bold">
+						📑 Document Library
+					</h2>
 					<button
-						className="text-sm underline"
+						className="btn-ghost text-accent font-bold text-sm tracking-legal"
 						onClick={() => dispatch(fetchDocuments())}
 					>
-						Refresh
+						↻ REFRESH
 					</button>
 				</div>
 				{loading ?
-					<p>Loading...</p>
+					<p className="text-foreground-muted">
+						Loading documents...
+					</p>
+				: items.length === 0 ?
+					<p className="text-foreground-muted">
+						No documents uploaded yet
+					</p>
 				:	null}
 				<div className="space-y-2">
 					{items.map(doc => (
 						<div
 							key={doc._id}
-							className="border rounded-xl p-3 bg-white flex items-center justify-between"
+							className="card rounded-lg p-4 flex items-center justify-between hover:border-accent transition-colors"
 						>
-							<div>
-								<p className="font-semibold">
+							<div className="flex-1">
+								<p className="font-semibold text-foreground">
 									{doc.originalName}
 								</p>
-								<p className="text-xs text-slate-600">
-									status: {doc.status} | retries:{' '}
-									{doc.retryCount || 0}
+								<p className="text-xs text-foreground-muted mt-1">
+									<span className="text-accent font-mono">
+										{doc.status}
+									</span>{' '}
+									· retries: {doc.retryCount || 0}
 								</p>
 								{doc.lastError ?
-									<p className="text-xs text-red-600">
-										{doc.lastError}
+									<p className="text-xs text-error mt-1">
+										⚠ {doc.lastError}
 									</p>
 								:	null}
 							</div>
 							<button
-								className="rounded-lg border px-3 py-1 disabled:opacity-50"
+								className="btn-secondary text-xs font-bold px-3 py-1.5"
 								onClick={() => dispatch(retryDocument(doc._id))}
 								disabled={doc.status === 'processing'}
+								title="Retry document processing"
 							>
-								Retry
+								{doc.status === 'processing' ?
+									'Processing...'
+								:	'Retry'}
 							</button>
 						</div>
 					))}

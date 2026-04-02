@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs';
 import FormData from 'form-data';
 import { env } from '../config/env.js';
+import { logger } from '../config/logger.js';
 
 const client = axios.create({
 	baseURL: env.aiServiceUrl,
@@ -11,6 +12,19 @@ const client = axios.create({
 export async function requestChat(payload) {
 	const { data } = await client.post('/chat', payload);
 	return data;
+}
+
+export async function requestChatStream(payload) {
+	logger.info('ai-service stream request', {
+		endpoint: '/chat/stream',
+		sessionId: payload.sessionId,
+		userId: payload.userId,
+		useRag: payload.useRag,
+	});
+	return client.post('/chat/stream', payload, {
+		responseType: 'stream',
+		timeout: 0,
+	});
 }
 
 export async function requestDocumentChat(payload) {

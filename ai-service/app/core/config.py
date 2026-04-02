@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     top_k: int = 5
     chunk_size: int = 1200
     chunk_overlap: int = 200
+    max_history_messages: int = 24
+    max_history_chars: int = 12000
 
 
 @lru_cache

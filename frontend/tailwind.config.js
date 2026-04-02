@@ -4,31 +4,44 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				/* Core palette */
-				ink: '#0F172A',
-				'ink-light': '#1E293B',
-				'ink-lighter': '#334155',
-				/* Primary - Subtle blue-slate */
-				primary: '#3B82F6',
-				'primary-dark': '#1E40AF',
-				'primary-light': '#DBEAFE',
-				/* Neutral palette */
-				'neutral-50': '#F9FAFB',
-				'neutral-100': '#F3F4F6',
-				'neutral-200': '#E5E7EB',
-				'neutral-300': '#D1D5DB',
-				'neutral-600': '#4B5563',
-				/* Accent for user messages */
-				accent: '#10B981',
-				/* Legacy - keeping for backward compatibility */
-				dusk: '#0f172a',
-				blaze: '#d97706',
-				mint: '#059669',
-				parchment: '#fefce8',
+				/* Law book palette - aged, warm, sophisticated */
+				/* Core backgrounds - deep browns and blacks */
+				surface: '#1a1410',
+				'surface-secondary': '#2d2620',
+				'surface-tertiary': '#3d3630',
+				/* Text - warm cream and ivory */
+				foreground: '#f5f0e8',
+				'foreground-secondary': '#d4cfc7',
+				'foreground-muted': '#a89f97',
+				/* Accent - muted gold for legal/manuscript feel */
+				accent: '#b8956a',
+				'accent-light': '#d4a574',
+				'accent-muted': '#8b7d6b',
+				/* Secondary colors */
+				success: '#7cb342',
+				warning: '#c9a961',
+				error: '#c65555',
+				/* For backward compatibility */
+				ink: '#1a1410',
+				'ink-light': '#2d2620',
+				'ink-lighter': '#3d3630',
+				primary: '#b8956a',
+				'primary-dark': '#8b7d6b',
+				'primary-light': '#d4a574',
+				'neutral-50': '#f5f0e8',
+				'neutral-100': '#eae5dd',
+				'neutral-200': '#d4cfc7',
+				'neutral-300': '#a89f97',
+				'neutral-600': '#6b6560',
+				dusk: '#1a1410',
+				blaze: '#d4a574',
+				mint: '#7cb342',
+				parchment: '#eae5dd',
 			},
 			fontFamily: {
-				display: ['"Space Grotesk"', 'sans-serif'],
-				body: ['"Manrope"', 'sans-serif'],
+				display: ['"Georgia"', '"Cambria"', 'serif'],
+				body: ['"Georgia"', '"Cambria"', 'serif'],
+				mono: ['"Courier New"', 'monospace'],
 			},
 			spacing: {
 				0: '0',
@@ -47,17 +60,44 @@ export default {
 			borderRadius: {
 				xs: '6px',
 				sm: '8px',
-				md: '12px',
-				lg: '16px',
+				md: '10px',
+				lg: '12px',
+				xl: '16px',
 				full: '9999px',
 			},
 			boxShadow: {
-				xs: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-				sm: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-				base: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-				md: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-				lg: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-				'chat-bubble': '0 2px 8px rgba(0, 0, 0, 0.08)',
+				xs: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
+				sm: '0 2px 4px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+				base: '0 4px 8px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+				md: '0 8px 16px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+				lg: '0 12px 24px -6px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+				'chat-bubble':
+					'0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+				inner: 'inset 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 -1px 0 rgba(255, 255, 255, 0.05)',
+			},
+			backgroundImage: {
+				'paper-texture': `
+					repeating-linear-gradient(90deg, rgba(139, 125, 107, 0.02) 0%, transparent 1%),
+					repeating-linear-gradient(0deg, rgba(139, 125, 107, 0.01) 0%, transparent 1%)
+				`,
+				'subtle-grain': `
+					url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise" seed="2" /></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.03"/></svg>')
+				`,
+			},
+			fontSize: {
+				xs: '0.75rem',
+				sm: '0.875rem',
+				base: '1rem',
+				lg: '1.125rem',
+				xl: '1.25rem',
+				'2xl': '1.5rem',
+				'3xl': '1.875rem',
+				'4xl': '2.25rem',
+			},
+			letterSpacing: {
+				normal: '0',
+				legal: '0.025em',
+				wide: '0.05em',
 			},
 		},
 	},

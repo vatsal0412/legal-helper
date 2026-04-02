@@ -16,45 +16,62 @@ export function SignupPage() {
 	};
 
 	return (
-		<main className="min-h-screen grid place-items-center px-4">
+		<main className="min-h-screen grid place-items-center px-4 bg-surface">
 			<form
 				onSubmit={onSubmit}
-				className="glass rounded-2xl p-8 w-full max-w-md space-y-4"
+				className="card rounded-lg p-8 w-full max-w-md space-y-4 border-surface-tertiary"
 			>
-				<h1 className="font-display text-3xl">Create account</h1>
+				<div className="mb-6">
+					<h1 className="text-display text-foreground font-bold">
+						Create account
+					</h1>
+					<p className="text-caption text-foreground-muted mt-2">
+						Join for legal research and analysis
+					</p>
+				</div>
 				<input
-					className="w-full rounded-lg border p-3"
-					placeholder="Name"
+					className="input-field"
+					placeholder="Full name"
 					value={form.name}
 					onChange={e => setForm({ ...form, name: e.target.value })}
+					required
 				/>
 				<input
-					className="w-full rounded-lg border p-3"
-					placeholder="Email"
+					className="input-field"
+					placeholder="Email address"
 					type="email"
 					value={form.email}
 					onChange={e => setForm({ ...form, email: e.target.value })}
+					required
 				/>
 				<input
-					className="w-full rounded-lg border p-3"
+					className="input-field"
 					placeholder="Password"
 					type="password"
 					value={form.password}
 					onChange={e =>
 						setForm({ ...form, password: e.target.value })
 					}
+					required
 				/>
-				{error && <p className="text-red-600 text-sm">{error}</p>}
+				{error && (
+					<p className="text-error text-sm bg-error/10 rounded-lg p-2 text-center">
+						⚠ {error}
+					</p>
+				)}
 				<button
-					className="w-full rounded-lg bg-dusk text-white py-3"
+					className="btn-primary w-full font-bold tracking-legal"
 					disabled={loading}
 				>
-					Sign up
+					{loading ? '⏳ Creating...' : 'Create account'}
 				</button>
-				<p className="text-sm">
+				<p className="text-sm text-foreground-secondary text-center">
 					Already have an account?{' '}
-					<Link className="text-blaze" to="/login">
-						Login
+					<Link
+						className="text-accent font-bold hover:text-accent-light transition-colors"
+						to="/login"
+					>
+						Sign in
 					</Link>
 				</p>
 			</form>
