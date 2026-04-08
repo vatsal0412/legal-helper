@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+	ArrowLeft,
+	LoaderCircle,
+	Menu,
+	PenLine,
+	Trash2,
+	X,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { Sidebar } from '../components/Sidebar';
 import { ChatWindow } from '../components/ChatWindow';
@@ -14,6 +23,7 @@ import {
 
 export function ChatPage() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const {
 		currentChat,
 		messages,
@@ -146,17 +156,7 @@ export function ChatPage() {
 								disabled={isDeleting}
 								className="btn-ghost px-1 py-1"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-								>
-									<path d="M18 6 6 18" />
-									<path d="m6 6 12 12" />
-								</svg>
+								<X className="h-4 w-4" />
 							</button>
 						</div>
 						<p className="text-body text-foreground-secondary mb-1">
@@ -185,7 +185,18 @@ export function ChatPage() {
 								disabled={isDeleting}
 								className="inline-flex items-center justify-center px-4 py-2.5 bg-error/80 hover:bg-error text-foreground font-bold text-sm rounded-xs shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								{isDeleting ? '⏳ Deleting...' : '🗑 Delete'}
+								<span className="inline-flex items-center gap-2">
+									{isDeleting ?
+										<>
+											<LoaderCircle className="h-4 w-4 animate-spin" />
+											Deleting...
+										</>
+									:	<>
+											<Trash2 className="h-4 w-4" />
+											Delete
+										</>
+									}
+								</span>
 							</button>
 						</div>
 					</div>
@@ -222,22 +233,19 @@ export function ChatPage() {
 					<div className="flex items-center gap-3 min-w-0">
 						<button
 							type="button"
+							onClick={() => navigate('/dashboard')}
+							className="btn-ghost px-2 py-1"
+							title="Back to dashboard"
+						>
+							<ArrowLeft className="h-[18px] w-[18px]" />
+						</button>
+						<button
+							type="button"
 							onClick={() => setSidebarOpen(prev => !prev)}
 							className="btn-ghost px-2 py-1"
 							title="Toggle sidebar"
 						>
-							<svg
-								width="18"
-								height="18"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-							>
-								<path d="M3 12h18" />
-								<path d="M3 6h18" />
-								<path d="M3 18h18" />
-							</svg>
+							<Menu className="h-[18px] w-[18px]" />
 						</button>
 						<div className="min-w-0">
 							<h1 className="text-heading text-foreground truncate font-bold">
@@ -245,7 +253,10 @@ export function ChatPage() {
 							</h1>
 							<p className="text-caption text-foreground-muted">
 								{editingMessage ?
-									'✎ Editing message'
+									<span className="inline-flex items-center gap-2">
+										<PenLine className="h-3.5 w-3.5" />
+										Editing message
+									</span>
 								:	'Ask your legal question...'}
 							</p>
 						</div>

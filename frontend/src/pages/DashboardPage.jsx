@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FileText, LayoutDashboard, UserCircle2 } from 'lucide-react';
 
 export function DashboardPage() {
 	const user = useSelector(s => s.auth.user);
@@ -21,8 +22,8 @@ export function DashboardPage() {
 						to="/chat"
 						className="card rounded-lg p-5 text-center hover:border-accent transition-all group"
 					>
-						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/20 mb-3 mx-auto">
-							<div className="w-6 h-6 border-2 border-accent rounded-lg"></div>
+						<div className="flex items-center justify-center w-10 h-10 mx-auto mb-3 text-accent">
+							<LayoutDashboard className="h-6 w-6" />
 						</div>
 						<h2 className="text-heading text-foreground font-bold group-hover:text-accent transition-colors">
 							Chat Workspace
@@ -35,8 +36,8 @@ export function DashboardPage() {
 						to="/documents"
 						className="card rounded-lg p-5 text-center hover:border-accent transition-all group"
 					>
-						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/20 mb-3 mx-auto">
-							<div className="w-5 h-6 border-2 border-accent rounded-sm border-l-4 border-r-0"></div>
+						<div className="flex items-center justify-center w-10 h-10 mx-auto mb-3 text-accent">
+							<FileText className="h-6 w-6" />
 						</div>
 						<h2 className="text-heading text-foreground font-bold group-hover:text-accent transition-colors">
 							Documents
@@ -49,8 +50,8 @@ export function DashboardPage() {
 						to="/profile"
 						className="card rounded-lg p-5 text-center hover:border-accent transition-all group"
 					>
-						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-accent/20 mb-3 mx-auto">
-							<div className="w-6 h-6 rounded-full border-2 border-accent"></div>
+						<div className="flex items-center justify-center w-10 h-10 mx-auto mb-3 text-accent">
+							<UserCircle2 className="h-6 w-6" />
 						</div>
 						<h2 className="text-heading text-foreground font-bold group-hover:text-accent transition-colors">
 							Profile

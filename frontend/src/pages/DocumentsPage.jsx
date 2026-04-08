@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AlertCircle, ArrowLeft, LibraryBig, RefreshCcw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { FileUploader } from '../components/FileUploader';
 import {
 	fetchDocuments,
@@ -9,6 +11,7 @@ import {
 
 export function DocumentsPage() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const { items, loading, uploadState } = useSelector(s => s.documents);
 
 	useEffect(() => {
@@ -23,6 +26,15 @@ export function DocumentsPage() {
 
 	return (
 		<main className="max-w-6xl mx-auto p-4 space-y-4 bg-surface min-h-screen">
+			<button
+				type="button"
+				onClick={() => navigate('/dashboard')}
+				className="mb-2 btn-ghost text-foreground hover:text-accent transition-colors inline-flex items-center gap-2"
+				title="Back to dashboard"
+			>
+				<ArrowLeft className="h-4 w-4" />
+				<span className="text-sm">Back</span>
+			</button>
 			<FileUploader
 				onUpload={handleUpload}
 				loading={uploadState === 'uploading'}
@@ -30,13 +42,19 @@ export function DocumentsPage() {
 			<section className="card rounded-lg p-5">
 				<div className="flex items-center justify-between mb-4">
 					<h2 className="text-heading-lg text-foreground font-bold">
-						📑 Document Library
+						<span className="inline-flex items-center gap-2">
+							<LibraryBig className="h-5 w-5" />
+							Document Library
+						</span>
 					</h2>
 					<button
 						className="btn-ghost text-accent font-bold text-sm tracking-legal"
 						onClick={() => dispatch(fetchDocuments())}
 					>
-						↻ REFRESH
+						<span className="inline-flex items-center gap-2">
+							<RefreshCcw className="h-4 w-4" />
+							Refresh
+						</span>
 					</button>
 				</div>
 				{loading ?
@@ -66,7 +84,10 @@ export function DocumentsPage() {
 								</p>
 								{doc.lastError ?
 									<p className="text-xs text-error mt-1">
-										⚠ {doc.lastError}
+										<span className="inline-flex items-center gap-1">
+											<AlertCircle className="h-3.5 w-3.5" />
+											{doc.lastError}
+										</span>
 									</p>
 								:	null}
 							</div>

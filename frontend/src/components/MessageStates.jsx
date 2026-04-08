@@ -1,3 +1,5 @@
+import { MessageSquareText } from 'lucide-react';
+
 export function TypingIndicator({ text = 'Analyzing your question...' }) {
 	return (
 		<div className="fade-in flex justify-start">
@@ -24,18 +26,8 @@ export function EmptyState() {
 	return (
 		<div className="flex flex-col items-center justify-center h-full text-center py-12">
 			<div className="mb-6">
-				<div className="w-16 h-16 bg-primary-light rounded-full flex items-center justify-center mx-auto">
-					<svg
-						width="32"
-						height="32"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						strokeWidth="2"
-						className="text-primary"
-					>
-						<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-					</svg>
+				<div className="w-16 h-16 rounded-full border border-accent/40 flex items-center justify-center mx-auto text-accent">
+					<MessageSquareText className="h-8 w-8" />
 				</div>
 			</div>
 			<h2 className="text-heading-lg text-ink mb-2">

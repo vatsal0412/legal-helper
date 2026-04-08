@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from app.core.config import get_settings
 from app.core.logger import logger
 from app.services.gemini_service import embed_text, generate_answer, iter_answer_chunks
@@ -8,22 +10,12 @@ from app.services.vector_store import search
 settings = get_settings()
 
 
-def _build_prompt(query: str, contexts: list[str]) -> str:
-    context_block = "\n\n".join(f"[{i+1}] {ctx}" for i, ctx in enumerate(contexts))
-    return (
-        "You are Legal Helper, an AI legal assistant. "
-        "Answer clearly and avoid inventing legal facts. "
-        "If the context is insufficient, say so.\n\n"
-        f"Context:\n{context_block}\n\n"
-        f"User question: {query}\n\n"
-        "Provide a practical and concise answer."
-    )
-
-
-def run_rag(query: str, user_id: str, top_k: int, file_id: str | None = None):
+async def run_rag(query: str, user_id: str, top_k: int, file_id: str | None = None):
     logger.info("run_rag started", extra={"user_id": user_id, "file_id": file_id})
-    qvec = embed_text(query)
-    hits = search(qvec, user_id=user_id, top_k=top_k, file_id=file_id)
+    qvec = await embed_text(query)
+    # Keep retrieval narrow so the generation prompt stays within a stable size.
+    effective_top_k = max(1, min(int(top_k or 0), 5))
+    hits = await asyncio.to_thread(search, qvec, user_id=user_id, top_k=effective_top_k, file_id=file_id)
 
     contexts = []
     citations = []
@@ -40,8 +32,24 @@ def run_rag(query: str, user_id: str, top_k: int, file_id: str | None = None):
             }
         )
 
-    prompt = _build_prompt(query, contexts)
-    answer, usage = generate_answer(prompt)
+    if contexts:
+        logger.info(
+            "run_rag context prepared",
+            extra={
+                "user_id": user_id,
+                "file_id": file_id,
+                "hit_count": len(hits),
+                "context_count": len(contexts),
+                "context_preview": [text[:200] for text in contexts[:3]],
+            },
+        )
+    else:
+        logger.warning(
+            "run_rag found no retrievable context",
+            extra={"user_id": user_id, "file_id": file_id, "hit_count": len(hits)},
+        )
+
+    answer, usage = await generate_answer(query, contexts=contexts)
 
     logger.info(
         "run_rag completed",
@@ -55,7 +63,7 @@ def run_rag(query: str, user_id: str, top_k: int, file_id: str | None = None):
     }
 
 
-def run_rag_stream(
+async def run_rag_stream(
     query: str,
     user_id: str,
     top_k: int,
@@ -63,8 +71,10 @@ def run_rag_stream(
     history: list[dict] | None = None,
 ):
     logger.info("run_rag_stream started", extra={"user_id": user_id, "file_id": file_id})
-    qvec = embed_text(query)
-    hits = search(qvec, user_id=user_id, top_k=top_k, file_id=file_id)
+    qvec = await embed_text(query)
+    # Keep retrieval narrow so the generation prompt stays within a stable size.
+    effective_top_k = max(1, min(int(top_k or 0), 5))
+    hits = await asyncio.to_thread(search, qvec, user_id=user_id, top_k=effective_top_k, file_id=file_id)
 
     contexts = []
     citations = []
@@ -81,7 +91,23 @@ def run_rag_stream(
             }
         )
 
-    prompt = _build_prompt(query, contexts)
+    if contexts:
+        logger.info(
+            "run_rag_stream context prepared",
+            extra={
+                "user_id": user_id,
+                "file_id": file_id,
+                "hit_count": len(hits),
+                "context_count": len(contexts),
+                "context_preview": [text[:200] for text in contexts[:3]],
+            },
+        )
+    else:
+        logger.warning(
+            "run_rag_stream found no retrievable context",
+            extra={"user_id": user_id, "file_id": file_id, "hit_count": len(hits)},
+        )
+
     usage: dict[str, int] = {}
     effective_history = history or []
 
@@ -92,10 +118,11 @@ def run_rag_stream(
     ):
         effective_history = effective_history[:-1]
 
-    for chunk in iter_answer_chunks(
-        prompt,
+    async for chunk in iter_answer_chunks(
+        query,
         usage_container=usage,
         history=effective_history,
+        contexts=contexts,
     ):
         yield {"event": "delta", "text": chunk}
 

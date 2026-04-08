@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { AlertCircle, LoaderCircle } from 'lucide-react';
 import { login } from '../features/auth/authSlice';
 
 export function LoginPage() {
@@ -48,15 +49,18 @@ export function LoginPage() {
 					required
 				/>
 				{error && (
-					<p className="text-error text-sm bg-error/10 rounded-lg p-2 text-center">
-						⚠ {error}
-					</p>
+					<div className="error-indicator w-full justify-start">
+						<AlertCircle className="h-4 w-4" />
+						<span>{error}</span>
+					</div>
 				)}
 				<button
 					className="btn-primary w-full font-bold tracking-legal"
 					disabled={loading}
 				>
-					{loading ? '⏳ Logging in...' : 'Login'}
+					{loading ?
+						<LoaderCircle className="h-4 w-4 animate-spin" />
+					:	'Login'}
 				</button>
 				<p className="text-sm text-foreground-secondary text-center">
 					New user?{' '}

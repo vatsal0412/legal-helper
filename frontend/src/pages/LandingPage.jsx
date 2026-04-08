@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { CheckCircle2 } from 'lucide-react';
 
 export function LandingPage() {
 	return (
@@ -30,7 +31,15 @@ export function LandingPage() {
 					</Link>
 				</div>
 				<p className="text-caption text-foreground-muted mt-8 pt-6 border-t border-surface-tertiary">
-					✓ Secure • ✓ Private • ✓ Research-Grade
+					<span className="inline-flex items-center gap-2 mr-4">
+						<CheckCircle2 className="h-4 w-4" /> Secure
+					</span>
+					<span className="inline-flex items-center gap-2 mr-4">
+						<CheckCircle2 className="h-4 w-4" /> Private
+					</span>
+					<span className="inline-flex items-center gap-2">
+						<CheckCircle2 className="h-4 w-4" /> Research-Grade
+					</span>
 				</p>
 			</section>
 		</main>

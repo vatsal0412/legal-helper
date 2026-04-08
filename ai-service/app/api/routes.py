@@ -51,7 +51,7 @@ async def chat_stream(request: ChatRequest, http_request: Request):
     async def event_generator():
         try:
             if request.useRag:
-                for event in run_rag_stream(
+                async for event in run_rag_stream(
                     query=request.query,
                     user_id=request.userId,
                     top_k=5,
@@ -90,7 +90,7 @@ async def chat_stream(request: ChatRequest, http_request: Request):
             prompt = request.query
             usage: dict[str, int] = {}
 
-            for chunk in iter_answer_chunks(
+            async for chunk in iter_answer_chunks(
                 prompt,
                 usage_container=usage,
                 history=[item.model_dump() for item in request.history],
@@ -127,5 +127,5 @@ async def chat_stream(request: ChatRequest, http_request: Request):
 
 
 @router.post("/pdf/chat", response_model=ChatResponse)
-def pdf_chat(request: PdfChatRequest):
-    return run_rag(query=request.query, user_id=request.userId, top_k=5, file_id=request.fileId)
+async def pdf_chat(request: PdfChatRequest):
+    return await run_rag(query=request.query, user_id=request.userId, top_k=5, file_id=request.fileId)

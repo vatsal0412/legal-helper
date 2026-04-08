@@ -1,3 +1,4 @@
+import { BookOpenText, MessageSquare, PencilLine } from 'lucide-react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -27,18 +28,8 @@ export function ChatWindow({
 				{messages.length === 0 ?
 					<div className="flex flex-col items-center justify-center h-full text-center py-12">
 						<div className="mb-6">
-							<div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-								<svg
-									width="32"
-									height="32"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									className="text-surface"
-								>
-									<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-								</svg>
+							<div className="w-16 h-16 rounded-full border border-accent/40 flex items-center justify-center mx-auto mb-4 text-accent">
+								<MessageSquare className="h-8 w-8" />
 							</div>
 						</div>
 						<h2 className="text-heading-lg text-foreground mb-2">
@@ -76,17 +67,7 @@ export function ChatWindow({
 													className="absolute -left-9 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 btn-ghost"
 													title="Edit message"
 												>
-													<svg
-														width="14"
-														height="14"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														strokeWidth="2"
-													>
-														<path d="M12 20h9" />
-														<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-													</svg>
+													<PencilLine className="h-3.5 w-3.5" />
 												</button>
 											)}
 											<p className="text-body-lg leading-relaxed">
@@ -116,8 +97,9 @@ export function ChatWindow({
 										{msg.citations &&
 											msg.citations.length > 0 && (
 												<div className="mt-4 pt-4 border-t border-surface-tertiary">
-													<p className="text-caption font-semibold mb-3 text-accent">
-														📚 SOURCES & REFERENCES
+													<p className="text-caption font-semibold mb-3 text-accent flex items-center gap-2">
+														<BookOpenText className="h-4 w-4" />
+														SOURCES & REFERENCES
 													</p>
 													<div className="space-y-2">
 														{msg.citations.map(

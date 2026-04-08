@@ -1,3 +1,4 @@
+import { FileText, Upload } from 'lucide-react';
 import { useRef } from 'react';
 
 export function FileUploader({ onUpload, loading }) {
@@ -6,7 +7,10 @@ export function FileUploader({ onUpload, loading }) {
 	return (
 		<div className="card rounded-lg p-5">
 			<h3 className="text-heading text-foreground mb-2 font-bold">
-				📄 Document Ingestion
+				<span className="inline-flex items-center gap-2">
+					<FileText className="h-5 w-5" />
+					Document Ingestion
+				</span>
 			</h3>
 			<p className="text-body text-foreground-secondary mb-4">
 				Upload PDF or DOCX files for citation-backed legal analysis.
@@ -26,7 +30,7 @@ export function FileUploader({ onUpload, loading }) {
 			>
 				{loading ?
 					<span className="upload-indicator">
-						<div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+						<Upload className="h-4 w-4 animate-bounce" />
 						Uploading
 					</span>
 				:	<span className="font-semibold">Upload File</span>}

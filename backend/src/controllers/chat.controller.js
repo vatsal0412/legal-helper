@@ -97,8 +97,7 @@ export const createMessage = asyncHandler(async (req, res) => {
 		throw new ApiError(404, 'Chat not found');
 	}
 
-	const { content, fileId, editMessageId } = req.body;
-	const useRag = false;
+	const { content, fileId, editMessageId, useRag } = req.body;
 	logger.info('chat stream request received', {
 		chatId: String(chat._id),
 		userId: String(req.user._id),
