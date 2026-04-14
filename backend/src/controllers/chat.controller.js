@@ -115,6 +115,19 @@ export const createMessage = asyncHandler(async (req, res) => {
 		}
 		edited.content = content;
 		await edited.save();
+
+		const messagesToDelete = await Message.find({
+			chatId: chat._id,
+			createdAt: { $gt: edited.createdAt },
+		}).select({ _id: 1 });
+
+		const messageIds = messagesToDelete.map(message => message._id);
+		if (messageIds.length > 0) {
+			await Promise.all([
+				Message.deleteMany({ _id: { $in: messageIds } }),
+				TokenUsage.deleteMany({ messageId: { $in: messageIds } }),
+			]);
+		}
 	} else {
 		await Message.create({
 			chatId: chat._id,

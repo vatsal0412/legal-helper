@@ -168,6 +168,21 @@ const chatSlice = createSlice({
 		appendUserMessage(state, action) {
 			state.messages.push(action.payload);
 		},
+		applyEditedMessage(state, action) {
+			const { editMessageId, content } = action.payload || {};
+			if (!editMessageId) return;
+			const index = state.messages.findIndex(
+				message => message._id === editMessageId,
+			);
+			if (index === -1) return;
+
+			state.messages = state.messages.slice(0, index + 1);
+			state.messages[index] = {
+				...state.messages[index],
+				content,
+				updatedAt: new Date().toISOString(),
+			};
+		},
 		resetChatState(state) {
 			state.currentChat = null;
 			state.messages = [];
@@ -235,6 +250,7 @@ const chatSlice = createSlice({
 
 export const {
 	appendUserMessage,
+	applyEditedMessage,
 	resetChatState,
 	streamStart,
 	addToken,

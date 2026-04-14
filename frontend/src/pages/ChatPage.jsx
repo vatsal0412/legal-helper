@@ -15,6 +15,7 @@ import { ChatWindow } from '../components/ChatWindow';
 import { MessageComposer } from '../components/MessageComposer';
 import {
 	appendUserMessage,
+	applyEditedMessage,
 	createChat,
 	fetchChat,
 	resetChatState,
@@ -35,6 +36,7 @@ export function ChatPage() {
 	const [chats, setChats] = useState([]);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [editingMessage, setEditingMessage] = useState(null);
+	const [editInFlightId, setEditInFlightId] = useState(null);
 	const [chatPendingDelete, setChatPendingDelete] = useState(null);
 	const [isDeleting, setIsDeleting] = useState(false);
 
@@ -47,6 +49,12 @@ export function ChatPage() {
 	useEffect(() => {
 		loadChats();
 	}, []);
+
+	useEffect(() => {
+		if (!editInFlightId) return;
+		if (thinking || streaming) return;
+		setEditInFlightId(null);
+	}, [editInFlightId, thinking, streaming]);
 
 	const onNewChat = async () => {
 		const result = await dispatch(createChat({ title: 'New Chat' }));
@@ -116,6 +124,14 @@ export function ChatPage() {
 					content,
 				}),
 			);
+		} else {
+			dispatch(
+				applyEditedMessage({
+					editMessageId,
+					content,
+				}),
+			);
+			setEditInFlightId(editMessageId);
 		}
 
 		await dispatch(
@@ -265,7 +281,16 @@ export function ChatPage() {
 				{/* Chat Messages Container */}
 				<div className="flex-1 overflow-y-auto">
 					<ChatWindow
-						messages={messages}
+						messages={
+							editInFlightId ?
+								messages.slice(
+									0,
+									messages.findIndex(
+										msg => msg._id === editInFlightId,
+									) + 1,
+								)
+							:	messages
+						}
 						thinking={thinking}
 						streaming={streaming}
 						currentMessage={currentMessage}
