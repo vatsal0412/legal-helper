@@ -97,11 +97,10 @@ export const createMessage = asyncHandler(async (req, res) => {
 		throw new ApiError(404, 'Chat not found');
 	}
 
-	const { content, fileId, editMessageId, useRag } = req.body;
+	const { content, fileId, editMessageId } = req.body;
 	logger.info('chat stream request received', {
 		chatId: String(chat._id),
 		userId: String(req.user._id),
-		useRag,
 		fileId: fileId || null,
 	});
 
@@ -139,7 +138,6 @@ export const createMessage = asyncHandler(async (req, res) => {
 			query: content,
 			sessionId: String(chat._id),
 			userId: String(req.user._id),
-			useRag,
 			fileId,
 			history,
 		});

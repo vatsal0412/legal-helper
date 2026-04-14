@@ -42,7 +42,6 @@ client: genai.Client | None = None
 if settings.gemini_api_key:
     client = genai.Client(api_key=str(settings.gemini_api_key))
 
-# Keep Gemini concurrency bounded so uploads and chat traffic cannot exhaust quota together.
 ASYNC_SEMAPHORE = asyncio.Semaphore(max(2, min(int(settings.gemini_max_concurrency or 3), 5)))
 SYNC_SEMAPHORE = threading.BoundedSemaphore(max(2, min(int(settings.gemini_max_concurrency or 3), 5)))
 # Reuse embeddings for repeated chunks and repeated queries within the same process.
@@ -74,8 +73,7 @@ def _usage_dict(meta: Any, prompt: str, output: str) -> dict[str, int]:
         "totalTokens": int(getattr(meta, "total_token_count", 0) or 0),
     }
 
-
-def _fallback_embedding(text: str, dim: int = 768) -> list[float]:
+def _fallback_embedding(text: str, dim: int = 3072) -> list[float]:
     digest = hashlib.sha256(text.encode("utf-8")).digest()
     seed = int.from_bytes(digest[:8], "big")
     values = []
@@ -84,7 +82,6 @@ def _fallback_embedding(text: str, dim: int = 768) -> list[float]:
         state = (1664525 * state + 1013904223) & 0xFFFFFFFF
         values.append((state / 0xFFFFFFFF) * 2 - 1)
     return values
-
 
 def _cache_key(text: str) -> str:
     return hashlib.sha256(" ".join(text.split()).encode("utf-8")).hexdigest()
@@ -243,20 +240,6 @@ def _prepare_context_snippets(contexts: list[str] | None) -> list[str]:
     return formatted_chunks
 
 
-def _format_context_block(contexts: list[str] | None) -> str:
-    formatted_chunks = _prepare_context_snippets(contexts)
-    if not formatted_chunks:
-        return ""
-
-    context_text = "\n\n".join(formatted_chunks)
-
-    return (
-        "Use the following retrieved context while answering. "
-        "If it is insufficient, clearly say what is missing.\n\n"
-        f"Context:\n{context_text}"
-    )
-
-
 def _build_contents(
     user_query: str,
     history: list[dict[str, Any]] | None = None,
@@ -316,14 +299,6 @@ def _build_contents(
             )
 
     return contents
-
-
-def _response_text(response: Any) -> str:
-    text = getattr(response, "text", None) or ""
-    if text:
-        return text
-    return "No response generated."
-
 
 def _extract_embeddings(response: Any) -> list[list[float]]:
     embeddings = getattr(response, "embeddings", None) or []
@@ -493,58 +468,6 @@ def embed_texts_sync(texts: list[str], task_type: str = "RETRIEVAL_DOCUMENT") ->
         final_vectors.append(vector if vector is not None else _fallback_embedding(text))
     return final_vectors
 
-
-async def generate_answer(
-    prompt: str,
-    history: list[dict[str, Any]] | None = None,
-    contexts: list[str] | None = None,
-) -> tuple[str, dict[str, int]]:
-    gemini_client = client
-    if not gemini_client:
-        logger.warning("generate_answer fallback: Gemini client not configured")
-        answer = "Gemini API key is not configured. This is a fallback response."
-        usage = {
-            "inputTokens": len(prompt) // 4,
-            "outputTokens": len(answer) // 4,
-            "totalTokens": (len(prompt) + len(answer)) // 4,
-        }
-        return answer, usage
-
-    async def call_once() -> Any:
-        async with ASYNC_SEMAPHORE:
-            return await gemini_client.aio.models.generate_content(
-                model=settings.gemini_model,
-                contents=cast(Any, _build_contents(prompt, history=history, contexts=contexts)),
-            )
-
-    last_error: Exception | None = None
-    retries = max(int(settings.gemini_retry_attempts or 0), 0)
-    for attempt in range(retries + 1):
-        try:
-            response = await call_once()
-            text = _response_text(response)
-            usage = _usage_dict(getattr(response, "usage_metadata", None), prompt, text)
-            _record_metrics(usage=usage)
-            return text, usage
-        except Exception as exc:  # noqa: BLE001
-            last_error = exc
-            if not _is_retryable_exception(exc) or attempt >= retries:
-                break
-            logger.warning("Gemini generation request rate limited; retrying", extra={"attempt": attempt + 1})
-            _record_metrics(retries=1, rate_limited=True)
-            await _sleep_backoff(attempt)
-
-    logger.exception("generate_answer failed; returning fallback response", exc_info=last_error)
-    answer = "Gemini is temporarily rate limited. Please retry in a moment."
-    usage = {
-        "inputTokens": len(prompt) // 4,
-        "outputTokens": len(answer) // 4,
-        "totalTokens": (len(prompt) + len(answer)) // 4,
-    }
-    _record_metrics(usage=usage)
-    return answer, usage
-
-
 async def iter_answer_chunks(
     prompt: str,
     usage_container: dict[str, int] | None = None,
@@ -599,7 +522,7 @@ async def iter_answer_chunks(
             _record_metrics(retries=1, rate_limited=True)
             await _sleep_backoff(attempt)
 
-    logger.exception("gemini stream failed; returning fallback message", exc_info=last_error)
+    logger.exception("gemini stream failed", exc_info=last_error)
     fallback = "Gemini is temporarily rate limited. Please retry in a moment."
     if not output_parts:
         for token in fallback.split(" "):

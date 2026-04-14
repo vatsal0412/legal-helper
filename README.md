@@ -98,7 +98,7 @@ Project/
 ### AI Service
 
 - `POST /upload` starts FastAPI `BackgroundTasks` processing
-- `POST /chat` for RAG chat
+- `POST /chat/stream` for streaming RAG chat
 - `POST /pdf/chat` for file-specific contextual chat
 - Qdrant top-k retrieval with citation payloads
 - Gemini generation + embeddings (fallback behavior if key is missing)
@@ -176,7 +176,6 @@ docker compose up --build
 ```json
 {
 	"content": "What are termination clauses in SaaS agreements?",
-	"useRag": true,
 	"fileId": "optional-document-id",
 	"editMessageId": "optional-message-id"
 }

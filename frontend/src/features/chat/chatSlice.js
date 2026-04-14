@@ -17,7 +17,6 @@ export const sendMessage = createAsyncThunk(
 		try {
 			console.info('[chat] stream start request', {
 				chatId,
-				useRag: payload?.useRag,
 			});
 			const authToken = tokenStore.getAccess();
 			const response = await fetch(`${baseURL}/chat/${chatId}/message`, {

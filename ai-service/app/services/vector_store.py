@@ -20,58 +20,9 @@ client = QdrantClient(
 )
 
 VECTOR_NAME = "text"
-VECTOR_SIZE = 3072  # Updated for current Gemini embedding API output
+VECTOR_SIZE = 3072
 
-
-# -------------------------------
-# Collection Setup
-# -------------------------------
-def ensure_collection(vector_size: int = VECTOR_SIZE) -> None:
-    try:
-        info = client.get_collection(settings.qdrant_collection)
-        vectors = info.config.params.vectors
-
-        # Validate named vector schema
-        if not isinstance(vectors, dict):
-            raise ValueError("Collection uses unnamed vector")
-
-        if VECTOR_NAME not in vectors:
-            raise ValueError("Missing 'text' vector")
-
-        if vectors[VECTOR_NAME].size != vector_size:
-            raise ValueError("Vector size mismatch")
-
-    except Exception as e:
-        print(f"[INFO] Recreating collection due to: {e}")
-
-        client.recreate_collection(
-            collection_name=settings.qdrant_collection,
-            vectors_config={
-                VECTOR_NAME: rest.VectorParams(
-                    size=vector_size,
-                    distance=rest.Distance.COSINE,
-                )
-            },
-        )
-
-        # Add payload indexes
-        client.create_payload_index(
-            collection_name=settings.qdrant_collection,
-            field_name="user_id",
-            field_schema=rest.PayloadSchemaType.KEYWORD,
-        )
-
-        client.create_payload_index(
-            collection_name=settings.qdrant_collection,
-            field_name="file_id",
-            field_schema=rest.PayloadSchemaType.KEYWORD,
-        )
-
-ensure_collection()
-
-# -------------------------------
 # Helpers
-# -------------------------------
 def _chunk_hash(chunk: str) -> str:
     normalized = " ".join(chunk.split())
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
@@ -80,10 +31,7 @@ def _chunk_hash(chunk: str) -> str:
 def _point_id(file_id: str, checksum: str, chunk_hash: str) -> str:
     return str(uuid5(NAMESPACE_URL, f"{file_id}:{checksum}:{chunk_hash}"))
 
-
-# -------------------------------
 # Deduplication
-# -------------------------------
 def get_existing_chunk_points(
     file_id: str,
     checksum: str,
@@ -103,10 +51,7 @@ def get_existing_chunk_points(
 
     return {str(record.id): record for record in records}
 
-
-# -------------------------------
 # Upsert
-# -------------------------------
 def upsert_chunks(
     file_id: str,
     user_id: str,
@@ -114,8 +59,6 @@ def upsert_chunks(
     chunks: list[str],
     embeddings: list[list[float]],
 ) -> None:
-    ensure_collection(len(embeddings[0]) if embeddings else VECTOR_SIZE)
-
     BATCH_SIZE = 20
 
     def build_point(idx: int, chunk: str, vector: list[float]) -> rest.PointStruct:
@@ -168,10 +111,7 @@ def upsert_chunks(
     )
     print(f"[INFO] Total vectors in collection: {count.count}")
 
-
-# -------------------------------
 # Search
-# -------------------------------
 def search(
     query_embedding: list[float],
     user_id: str,
@@ -230,9 +170,7 @@ def search(
         "top_hits": top_hits,
     }
 
-    if results:
-        logger.info("qdrant search returned hits", extra=log_payload)
-    else:
-        logger.warning("qdrant search returned no hits", extra=log_payload)
+    if results: logger.info("qdrant search returned hits", extra=log_payload)
+    else: logger.warning("qdrant search returned no hits", extra=log_payload)
 
     return results

@@ -26,7 +26,6 @@ export const createChatSchema = Joi.object({
 
 export const sendMessageSchema = Joi.object({
 	content: Joi.string().min(1).required(),
-	useRag: Joi.boolean().default(true),
 	fileId: Joi.string().optional(),
 	editMessageId: Joi.string().optional(),
 });

@@ -9,17 +9,11 @@ const client = axios.create({
 	timeout: 60000,
 });
 
-export async function requestChat(payload) {
-	const { data } = await client.post('/chat', payload);
-	return data;
-}
-
 export async function requestChatStream(payload) {
 	logger.info('ai-service stream request', {
 		endpoint: '/chat/stream',
 		sessionId: payload.sessionId,
 		userId: payload.userId,
-		useRag: payload.useRag,
 	});
 	return client.post('/chat/stream', payload, {
 		responseType: 'stream',

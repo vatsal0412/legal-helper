@@ -12,7 +12,6 @@ class ChatRequest(BaseModel):
     query: str = Field(min_length=1)
     sessionId: str
     userId: str
-    useRag: bool = True
     fileId: str | None = None
     history: list[ChatHistoryMessage] = []
 

@@ -123,7 +123,6 @@ export function ChatPage() {
 				chatId: activeChatId,
 				payload: {
 					content,
-					useRag: true,
 					...(editMessageId ? { editMessageId } : {}),
 				},
 			}),
